@@ -28,7 +28,7 @@ type ImageResult = { id: string; title: string; source: string; image_url: strin
 type PinterestBoard = { id:string; name:string; description?:string; pin_count:number; privacy:string };
 type Garment = { id: string; name: string; maker: string; price: string; colors: readonly [string, string]; icon: string; referenceUrl: string; thumbnailUrl?: string; category?: LookCategory; accessoryType?: AccessoryType };
 type PhotoFile = { uri: string; name: string; type: string };
-type ServiceStatus = 'checking' | 'online' | 'offline';
+type ServiceStatus = 'checking' | 'online' | 'offline' | 'unavailable';
 type CameraPurpose = 'person' | 'look';
 type WardrobeItem = { id:string; createdAt:number; beforeUri:string; afterUri:string; garment:Garment; category:LookCategory };
 
@@ -148,6 +148,16 @@ async function serviceIsReachable(timeoutMs = 4_000) {
   }
 }
 
+async function internetIsReachable(timeoutMs = 3_000) {
+  for (const url of ['https://www.google.com/generate_204', 'https://www.cloudflare.com/cdn-cgi/trace']) {
+    try {
+      const response = await fetchWithTimeout(url, { method:'GET' }, timeoutMs);
+      if (response.ok) return true;
+    } catch { /* Try the second independent connectivity check. */ }
+  }
+  return false;
+}
+
 async function readStoredArray<T>(key: string): Promise<T[]> {
   try {
     const value = await AsyncStorage.getItem(key);
@@ -249,7 +259,9 @@ export default function App() {
     let active = true;
     const refresh = async () => {
       const reachable = await serviceIsReachable();
-      if (active) setServiceStatus(reachable ? 'online' : 'offline');
+      if (!active) return;
+      if (reachable) setServiceStatus('online');
+      else setServiceStatus(await internetIsReachable() ? 'unavailable' : 'offline');
     };
     refresh();
     const timer = setInterval(refresh, 30_000);
@@ -418,9 +430,16 @@ export default function App() {
     if (endpoint && serviceStatus !== 'online') {
       const reachable = await serviceIsReachable();
       if (run !== generationRun.current) return;
-      setServiceStatus(reachable ? 'online' : 'offline');
+      const nextStatus: ServiceStatus = reachable ? 'online' : await internetIsReachable() ? 'unavailable' : 'offline';
+      if (run !== generationRun.current) return;
+      setServiceStatus(nextStatus);
       if (!reachable) {
-        Alert.alert('No internet connection', 'Luku needs an internet connection to create your preview. Reconnect and try again.');
+        Alert.alert(
+          nextStatus === 'offline' ? 'No internet connection' : 'Preview service unavailable',
+          nextStatus === 'offline'
+            ? 'Luku needs an internet connection to create your preview. Reconnect and try again.'
+            : 'Your internet is working, but Luku could not reach the image service. Please try again shortly.',
+        );
         return;
       }
     }
@@ -460,8 +479,18 @@ export default function App() {
       if (run !== generationRun.current) return;
       const message = error instanceof Error ? error.message : 'Check your connection and try another photo.';
       const offline = /network request failed|failed to fetch|internet connection/i.test(message);
-      if (offline) setServiceStatus('offline');
-      Alert.alert(offline ? 'No internet connection' : 'We couldn’t create this preview', offline ? 'Luku could not reach the image service. Reconnect to the internet and try again.' : message, [{ text: 'Try again', onPress: () => setScreen('catalog') }]);
+      const networkStatus: ServiceStatus = offline ? await internetIsReachable() ? 'unavailable' : 'offline' : serviceStatus;
+      if (run !== generationRun.current) return;
+      if (offline) setServiceStatus(networkStatus);
+      Alert.alert(
+        offline ? networkStatus === 'offline' ? 'No internet connection' : 'Preview service unavailable' : 'We couldn’t create this preview',
+        offline
+          ? networkStatus === 'offline'
+            ? 'Luku could not access the internet. Reconnect and try again.'
+            : 'Your internet is working, but Luku could not reach the image service. Please try again shortly.'
+          : message,
+        [{ text:'Try again', onPress:() => setScreen('catalog') }],
+      );
     } finally {
       if (progressTimer) clearInterval(progressTimer);
     }
@@ -480,6 +509,7 @@ export default function App() {
     <SafeAreaProvider><SafeAreaView style={styles.safe} edges={['top','right','bottom','left']}>
       <StatusBar style="dark" />
       {serviceStatus === 'offline' && <View style={styles.offlineBanner}><Ionicons name="cloud-offline-outline" size={17} color="#fff"/><Text style={styles.offlineText}>No internet — previews are unavailable</Text></View>}
+      {serviceStatus === 'unavailable' && <View style={styles.offlineBanner}><Ionicons name="cloud-offline-outline" size={17} color="#fff"/><Text style={styles.offlineText}>Luku preview service is temporarily unavailable</Text></View>}
       {screen !== 'home' && screen !== 'camera' && screen !== 'processing' && (
         <View style={styles.header}>
           <Pressable onPress={goBack} style={styles.iconButton}><Ionicons name="arrow-back" size={21} /></Pressable>
