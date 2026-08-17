@@ -2,7 +2,7 @@
   "expo": {
     "name": "Luku",
     "slug": "luku",
-    "version": "1.1.11",
+    "version": "1.1.12",
     "scheme": "luku",
     "orientation": "portrait",
     "newArchEnabled": true,
@@ -16,7 +16,7 @@
     "backgroundColor": "#FFF9FB",
     "android": {
       "package": "com.luku.tryon",
-      "versionCode": 22,
+      "versionCode": 23,
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
       ],

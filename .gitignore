@@ -9,6 +9,7 @@ dist/
 .audit-*/
 output/
 tmp/
+.tmp/
 *.log
 luku-expo-*.png
 *.apk
