@@ -14,6 +14,14 @@
   <img src="assets/luku-home-before-after.webp" alt="Luku before and after virtual try-on" width="680" />
 </p>
 
+## Judge access
+
+**[Open the Luku judge page](https://otienokeith.github.io/Luku/)** for the signed Android APK and a three-step evaluation route.
+
+- [Download Luku v1.1.12 for Android](https://github.com/OtienoKeith/Luku/releases/download/v1.1.12/luku-v1.1.12.apk)
+- [Check the hosted API](https://luku-judge-api.otienomkeith.workers.dev/health)
+- Fastest flow: **Clothes → Use a sample shopper → choose a look → Generate**
+
 ## The idea
 
 Buying a look online often ends with one expensive question: **will this work for me?** Product photos show the item on somebody else, while inspiration is scattered across galleries, search results, Pinterest, and store websites.
@@ -64,9 +72,10 @@ Expo / React Native Android app
   |-- Bing and store image selection
   |-- Pinterest OAuth
   |
-  +--> Luku Express API
+  +--> Luku Cloudflare Worker
          |-- image validation and upload limits
-         |-- rate limiting and private-network URL blocking
+         |-- KV-backed rate limiting and Pinterest sessions
+         |-- private-network URL blocking
          |-- Pinterest token boundary
          |
          +--> Perfect Corp. YouCam APIs
@@ -82,7 +91,8 @@ The mobile app receives only the public Luku backend URL. YouCam and Pinterest s
 - Expo 54, React Native 0.81, React 19, and TypeScript.
 - Expo Camera, Image Picker, Media Library, Audio, and Sharing.
 - React Native WebView for in-app image discovery.
-- Node.js, Express, Multer, Sharp, TensorFlow.js, and COCO-SSD.
+- Cloudflare Workers and KV for the permanent public API.
+- Node.js, Express, Multer, Sharp, TensorFlow.js, and COCO-SSD for local development and enhanced photo checks.
 - Perfect Corp. YouCam Fashion APIs.
 - Pinterest API v5 OAuth integration.
 - Supabase Edge Function starter for a clothes-only hosted deployment.
@@ -168,7 +178,7 @@ pnpm run check
 pnpm doctor
 ```
 
-The current Android release is **v1.1.11** (`versionCode 22`) and has been tested on a physical Redmi device.
+The current Android release is **v1.1.12** (`versionCode 23`) and has been tested on a physical Redmi device.
 
 ## License and credits
 
