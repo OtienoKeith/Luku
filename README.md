@@ -48,8 +48,6 @@ The product is evaluated around four strengths:
 3. **Impact:** premium virtual styling made accessible to shoppers and, later, independent retailers.
 4. **Originality:** inspiration can come directly from search, a Pin, a camera, or a store page without first saving it to the gallery.
 
-See [HACKATHON.md](HACKATHON.md) for the pitch, judging alignment, and suggested demo script.
-
 ## Product journey
 
 1. Choose what to try: clothes, hair, or accessories.
