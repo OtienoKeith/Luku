@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Luku",
+    "slug": "luku",
+    "version": "1.1.11",
+    "scheme": "luku",
+    "orientation": "portrait",
+    "newArchEnabled": true,
+    "icon": "./assets/luku-app-icon.png",
+    "splash": {
+      "image": "./assets/luku-logo-inclusive.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFF9FB"
+    },
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFF9FB",
+    "android": {
+      "package": "com.luku.tryon",
+      "versionCode": 22,
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/luku-app-icon.png",
+        "backgroundColor": "#F8DDE7"
+      }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Luku uses your selected photo to create a private style preview.",
+          "cameraPermission": "Luku uses the camera to take a photo for your private style preview."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Luku uses the camera to take a photo for your private style preview.",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Luku accesses only the photos you choose.",
+          "savePhotosPermission": "Luku saves completed previews to your photo library.",
+          "granularPermissions": [
+            "photo"
+          ]
+        }
+      ],
+      "expo-font"
+    ]
+  }
+}

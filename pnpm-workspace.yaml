@@ -1,0 +1,13 @@
+allowBuilds:
+  core-js: true
+nodeLinker: hoisted
+supportedArchitectures:
+  os:
+    - win32
+  cpu:
+    - x64
+overrides:
+  postcss: 8.5.23
+  uuid: 11.1.1
+patchedDependencies:
+  '@react-native/gradle-plugin@0.81.5': patches/@react-native__gradle-plugin@0.81.5.patch
